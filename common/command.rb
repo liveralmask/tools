@@ -21,6 +21,17 @@ def execute( command, input = "", is_outputs = true, is_errors = true )
     i_w.write input
     i_w.close
     
+    outputs_thread = Thread.start{
+      o_r.each{|line|
+        outputs.push line.chomp if is_outputs
+      }
+    }
+    errors_thread = Thread.start{
+      e_r.each{|line|
+        errors.push line.chomp if is_errors
+      }
+    }
+    
     Process.waitpid( pid )
     status = $?.exitstatus
   rescue => err
@@ -29,10 +40,10 @@ def execute( command, input = "", is_outputs = true, is_errors = true )
       errors.push err.backtrace
     end
   ensure
-    o_r.each{|line| outputs.push line.chomp } if is_outputs
-    e_r.each{|line| errors.push line.chomp } if is_errors
     o_r.close
     e_r.close
+    outputs_thread.join
+    errors_thread.join
   end
   [ status, outputs, errors, command ]
 end
