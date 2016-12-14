@@ -1,0 +1,2 @@
+require "ult"
+extend Ult
