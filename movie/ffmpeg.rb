@@ -48,7 +48,7 @@ when "join"
   
   # ts => mp4
   concat_file = "#{output_file}.txt"
-  open( concat_file, "w" ){|file|
+  mkfile( concat_file, "w" ){|file|
     file.puts ts_files
   }
   ffmpeg( "ffmpeg -f concat -i #{concat_file} -vf scale=#{scale} -y #{output_file}" )
