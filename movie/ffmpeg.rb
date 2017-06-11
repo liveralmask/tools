@@ -4,12 +4,10 @@ require "ult"
 extend Ult
 
 def ffmpeg( command )
-  puts command
-  status, outputs, errors = execute( command )
-  if 0 != status
-    puts errors
-    exit 2
-  end
+  status = execute( command ){|type, io, msg|
+    io.puts msg
+  }
+  exit 1 if 0 != status
 end
 
 action = ARGV.shift
