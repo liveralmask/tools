@@ -3,13 +3,6 @@
 require "ult"
 extend Ult
 
-def ffmpeg( command )
-  status = execute( command ){|type, io, msg|
-    io.puts msg
-  }
-  exit 1 if 0 != status
-end
-
 action = ARGV.shift
 case action
 when "join"
@@ -49,7 +42,7 @@ when "join"
     else
       ts_file = ".tmp_#{i}.ts"
       tmp_files.push ts_file
-      ffmpeg( "ffmpeg -i #{input_file} -c copy -f mpegts -y #{ts_file}" )
+      shell( "ffmpeg -i #{input_file} -c copy -f mpegts -y #{ts_file}" )
     end
     ts_files.push "file '#{ts_file}'"
   }
@@ -59,7 +52,7 @@ when "join"
   mkfile( concat_file, "w" ){|file|
     file.puts ts_files
   }
-  ffmpeg( "ffmpeg -f concat -i #{concat_file} -vf scale=#{scale} -y #{output_file}" )
+  shell( "ffmpeg -f concat -i #{concat_file} -vf scale=#{scale} -y #{output_file}" )
   
   # delete temporary files
   tmp_files.each_with_index{|tmp_file|
